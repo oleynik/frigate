@@ -107,11 +107,16 @@ if [[ "${TARGETARCH}" == "amd64" ]]; then
     rm -f /usr/share/keyrings/intel-graphics.gpg
     rm -f /etc/apt/sources.list.d/intel-gpu-jammy.list
 
-    # upgrade libva2, oneVPL runtime, and libvpl2 from trixie for Battlemage support
+    # upgrade libva2, oneVPL runtime, and libvpl2 from trixie for Battlemage
+    # support, and mesa-va-drivers for RDNA 3.5 (gfx1151) support -- bookworm's
+    # Mesa 22.3 predates that family, so radeonsi rejects the device with
+    # "amdgpu: unknown (family_id, chip_external_rev): (150, 193)" and
+    # vaInitialize fails with error code 2
     echo "deb http://deb.debian.org/debian trixie main" > /etc/apt/sources.list.d/trixie.list
     apt-get -qq update
     apt-get -qq install -y -t trixie libva2 libva-drm2 libzstd1
     apt-get -qq install -y -t trixie libmfx-gen1.2 libvpl2
+    apt-get -qq install -y -t trixie mesa-va-drivers
     rm -f /etc/apt/sources.list.d/trixie.list
     apt-get -qq update
     apt-get -qq install -y ocl-icd-libopencl1
